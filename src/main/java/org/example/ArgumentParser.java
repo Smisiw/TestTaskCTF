@@ -22,25 +22,28 @@ public class ArgumentParser {
                     switch (args[currentArgIndex]) {
                         case "-o": {
                             try {
-                                Path path = new File(args[++currentArgIndex]).toPath();
-                                resultsPath = path.toAbsolutePath().toString();
-                                currentArgIndex++;
+                                if (resultsPath.isEmpty()) {
+                                    Path path = new File(args[++currentArgIndex]).toPath();
+                                    resultsPath = path.toAbsolutePath().toString();
+                                }
                             }
                             catch (InvalidPathException e) {
                                 System.out.println("Неверно указан путь к папке с результатами");
-                                currentArgIndex++;
                             }
+                            currentArgIndex++;
                             break;
                         }
                         case "-p": {
                             try {
-                                Path file = new File(args[++currentArgIndex]).toPath();
-                                resultsPrefix = args[currentArgIndex++];
+                                if (resultsPrefix.isEmpty()) {
+                                    Path file = new File(args[++currentArgIndex]).toPath();
+                                    resultsPrefix = args[currentArgIndex];
+                                }
                             }
                             catch (InvalidPathException e) {
                                 System.out.println("Неверно указан префикс файлов с результатами");
-                                currentArgIndex++;
                             }
+                            currentArgIndex++;
                             break;
                         }
                         case "-s": {
