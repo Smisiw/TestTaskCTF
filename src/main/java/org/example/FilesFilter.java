@@ -23,9 +23,9 @@ public class FilesFilter {
             }
             Path path = Paths.get(parser.getResultsPath());
             Files.createDirectories(path);
-            BufferedWriter integerOutput = new BufferedWriter(new FileWriter((parser.getResultsPath().isEmpty()? "" : path + "/") + parser.getResultsPrefix() + "integers.txt", parser.isAppendMode()));
-            BufferedWriter decimalOutput = new BufferedWriter(new FileWriter((parser.getResultsPath().isEmpty()? "" : path + "/")+ parser.getResultsPrefix() + "floats.txt", parser.isAppendMode()));
-            BufferedWriter stringOutput = new BufferedWriter(new FileWriter((parser.getResultsPath().isEmpty()? "" : path + "/") + parser.getResultsPrefix() + "strings.txt", parser.isAppendMode()));
+            BufferedWriter integerOutput = null;
+            BufferedWriter decimalOutput = null;
+            BufferedWriter stringOutput = null;
             String line;
             while (!files.isEmpty()) {
                 for (BufferedReader file : files) {
@@ -37,16 +37,25 @@ public class FilesFilter {
                     else {
                         switch (identifyType(line)) {
                             case INTEGER: {
+                                if (integerOutput == null) {
+                                    integerOutput = new BufferedWriter(new FileWriter((parser.getResultsPath().isEmpty()? "" : path + "/") + parser.getResultsPrefix() + "integers.txt", parser.isAppendMode()));
+                                }
                                 statisticsService.addInteger(line);
                                 integerOutput.write(line + "\n");
                                 break;
                             }
                             case DECIMAL: {
+                                if (decimalOutput == null) {
+                                    decimalOutput = new BufferedWriter(new FileWriter((parser.getResultsPath().isEmpty()? "" : path + "/")+ parser.getResultsPrefix() + "floats.txt", parser.isAppendMode()));
+                                }
                                 statisticsService.addDecimal(line);
                                 decimalOutput.write(line + "\n");
                                 break;
                             }
                             case STRING: {
+                                if (stringOutput == null) {
+                                    stringOutput = new BufferedWriter(new FileWriter((parser.getResultsPath().isEmpty()? "" : path + "/") + parser.getResultsPrefix() + "strings.txt", parser.isAppendMode()));
+                                }
                                 statisticsService.addString(line);
                                 stringOutput.write(line + "\n");
                                 break;
@@ -55,9 +64,15 @@ public class FilesFilter {
                     }
                 }
             }
-            integerOutput.close();
-            decimalOutput.close();
-            stringOutput.close();
+            if (integerOutput != null) {
+                integerOutput.close();
+            }
+            if (decimalOutput != null) {
+                decimalOutput.close();
+            }
+            if (stringOutput != null) {
+                stringOutput.close();
+            }
             if (parser.getStatistics() == StatisticsType.FULL) {
                 System.out.println(statisticsService.getFullStatistics());
             }

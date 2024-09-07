@@ -7,7 +7,7 @@ import java.math.MathContext;
 public class StatisticsService {
     private int intCount = 0;
     private int decimalCount = 0;
-    private int StringCount = 0;
+    private int stringCount = 0;
     private BigInteger minInt;
     private BigInteger maxInt;
     private BigDecimal minDecimal;
@@ -42,7 +42,7 @@ public class StatisticsService {
     }
 
     public void addString(String value) {
-        StringCount++;
+        stringCount++;
         if (shortestStringLength > value.length()) {
             shortestStringLength = value.length();
         }
@@ -56,36 +56,51 @@ public class StatisticsService {
                 Целых чисел: %d
                 Вещественных чисел: %d
                 Строк: %d""",
-                intCount, decimalCount, StringCount
+                intCount, decimalCount, stringCount
         );
     }
 
     public String getFullStatistics() {
-        BigDecimal avgInt = new BigDecimal(sumInt).divide(new BigDecimal(String.valueOf(intCount)), MathContext.DECIMAL128);
-        BigDecimal avgDecimal = sumDecimal.divide(new BigDecimal(String.valueOf(decimalCount)), MathContext.DECIMAL128);
-        return String.format("""
-                        Целые числа
-                        Количество: %d
+        String intStatistics = "", decimalStatistics = "", stringStatistics = "";
+        if (intCount > 0) {
+            BigDecimal avgInt = new BigDecimal(sumInt).divide(new BigDecimal(String.valueOf(intCount)), MathContext.DECIMAL128);
+            intStatistics = String.format("""
                         Максимальное: %d
                         Минимальное: %d
                         Сумма: %d
                         Среднее: %f
-                        
-                        Вещественные числа
-                        Количество: %d
+                        """,
+                    maxInt, minInt, sumInt, avgInt);
+        }
+        if (decimalCount > 0) {
+            BigDecimal avgDecimal = sumDecimal.divide(new BigDecimal(String.valueOf(decimalCount)), MathContext.DECIMAL128);
+            decimalStatistics = String.format("""
                         Максимальное: %f
                         Минимальное: %f
                         Сумма: %f
                         Среднее: %f
-                        
-                        Строки
-                        Количество: %d
+                        """,
+                    maxDecimal, minDecimal, sumDecimal, avgDecimal);
+        }
+        if (stringCount > 0) {
+            stringStatistics = String.format("""
                         Размер самой короткой: %d
                         Размер самой длинной: %d
                         """,
-                intCount, maxInt, minInt, sumInt, avgInt,
-                decimalCount, maxDecimal, minDecimal, sumDecimal, avgDecimal,
-                StringCount, shortestStringLength, longestStringLength
+                    shortestStringLength, longestStringLength);
+        }
+        return String.format("""
+                        Целые числа
+                        Количество: %d
+                        %s
+                        Вещественные числа
+                        Количество: %d
+                        %s
+                        Строки
+                        Количество: %d
+                        %s
+                        """,
+                intCount, intStatistics, decimalCount, decimalStatistics, stringCount, stringStatistics
         );
     }
 }
